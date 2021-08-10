@@ -8,6 +8,5 @@ Objects for the Vykdom Discord Bot.
 :license: GNU General Public License v3.0, see LICENSE for more details.
 """
 
-from .Vyktranian import *
-from .Award import *
+from .Models import *
 from .Errors import *
