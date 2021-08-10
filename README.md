@@ -2,7 +2,6 @@
 
 Main Vykdom Discord Bot
 
-
 ### Commands
 
 * c!profile [User] --> Brings up Vykdom Profile
@@ -10,6 +9,7 @@ Main Vykdom Discord Bot
 ##### Database
 
 * c!verify --> Verifies User Through Bot Using ROBLOX API
+* c!setchannel [verify/commands] --> Set Channel Command Permission Type
 * c!reverify --> Same as above
 * c!update --> Updates users information to the database and Spreadsheet
 
