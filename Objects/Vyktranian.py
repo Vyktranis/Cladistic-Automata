@@ -1,7 +1,14 @@
-import typing
-import asyncio
 import discord
 from discord.ext import commands
+
+"""
+User Object
+    .id
+    .name
+    .discriminator
+        .avatar()
+
+"""
 
 class Vyktranian:
     """Vykdom Member
@@ -13,7 +20,14 @@ class Vyktranian:
     """
 
     def __init__(self, data):
+        self.id
+        self.name
+        self.discriminator
+        self._avatar
         pass
+
+    def avatar(self):
+        return f"https://cdn.discordapp.com/avatars/{self.id}/{self._avatar}.png"
 
     @classmethod
     async def convert(ctx, argument):
