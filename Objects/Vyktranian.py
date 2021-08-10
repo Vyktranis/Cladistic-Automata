@@ -7,7 +7,6 @@ User Object
     .name
     .discriminator
         .avatar()
-
 """
 
 class Vyktranian:
@@ -24,7 +23,6 @@ class Vyktranian:
         self.name
         self.discriminator
         self._avatar
-        pass
 
     def avatar(self):
         return f"https://cdn.discordapp.com/avatars/{self.id}/{self._avatar}.png"
