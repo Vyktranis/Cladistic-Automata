@@ -9,3 +9,4 @@ Objects for the Vykdom Discord Bot.
 """
 
 from .Vyktranian import *
+from .Award import *
