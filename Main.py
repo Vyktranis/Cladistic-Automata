@@ -14,7 +14,7 @@ from .config import BOT_TOKEN
 
 # Bot Creation
 client = commands.Bot(
-    command_prefix=commands.when_mentioned_or("a!"), 
+    command_prefix=commands.when_mentioned_or("c!"), 
     intents=discord.Intents.all(),
     description="Cladistic Automata made for the Vyktranis Discord Servers",
     case_insensitive=True
