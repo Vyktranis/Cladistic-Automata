@@ -1,0 +1,4 @@
+
+class RobloxUserNotFound(Exception):
+    pass
+
