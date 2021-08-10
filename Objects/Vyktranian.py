@@ -9,7 +9,7 @@ class Vyktranian:
     This represents a Vykdom Member
 
     parms:
-        data -- Discord Member or Database data
+        data -- Discord Member or Database Data
     """
 
     def __init__(self, data):
@@ -19,5 +19,6 @@ class Vyktranian:
     async def convert(ctx, argument):
         member = commands.MemberConverter.convert(ctx, argument)
         ## DB to get member data
+        
         #return cls()
         pass
