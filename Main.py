@@ -5,10 +5,10 @@
 # IMPORTS
 
 import discord
+from discord.ext import commands
 
 import Objects
-
-from discord.ext import commands
+from .config import BOT_TOKEN
 
 ################################
 
@@ -20,4 +20,4 @@ vykBot = commands.Bot(
     case_insensitive=True
     )
 
-vykbot.run()
+vykBot.run(BOT_TOKEN)
