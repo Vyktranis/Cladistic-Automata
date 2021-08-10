@@ -8,8 +8,6 @@ Errors for the Vykdom Discord Bot.
 :license: GNU General Public License v3.0, see LICENSE for more details.
 """
 
-## ROBLOX API CUSTOM EXCEPTIONS
-
 class RobloxUserNotFound(Exception):
     """RobloxUserNotFound
 
@@ -24,3 +22,9 @@ class RobloxNamesNotFound(Exception):
     """
     pass
 
+class RobloxNoThumbnailFound(Exception):
+    """RobloxNoThumbnailFound
+
+    This Error is used when the roblox api cannot find a users Thumbnail.
+    """
+    pass
