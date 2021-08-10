@@ -22,5 +22,5 @@ class Vyktranian:
         
         #return cls()
         pass
-    
-    penis
+
+

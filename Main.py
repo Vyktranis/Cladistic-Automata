@@ -13,11 +13,15 @@ from .config import BOT_TOKEN
 ################################
 
 # Bot Creation
-vykBot = commands.Bot(
+client = commands.Bot(
     command_prefix=commands.when_mentioned_or("a!"), 
     intents=discord.Intents.all(),
     description="Cladistic Automata made for the Vyktranis Discord Servers",
     case_insensitive=True
-    )
+)
 
-vykBot.run(BOT_TOKEN)
+@client.event
+async def on_ready():
+    print("Online")
+
+client.run(BOT_TOKEN)
