@@ -19,15 +19,55 @@ class Audit(commands.Cog):
         pass
 
     @commands.Cog.listener
-    async def on_member_join(member):
+    async def on_member_join(self, member):
         pass
 
     @commands.Cog.listener
-    async def on_member_remove(member):
+    async def on_member_remove(self, member):
+        pass
+
+    @commands.Cog.listener
+    async def on_member_ban(self, guild, member):
+        pass
+
+    @commands.Cog.listener
+    async def on_member_unban(self, guild, member):
         pass
 
     @commands.Cog.listener
     async def on_user_update(self, before, after):
+        pass
+
+    @commands.Cog.listener
+    async def on_guild_channel_delete(self, channel):
+        pass
+
+    @commands.Cog.listener
+    async def on_guild_channel_create(self, channel):
+        pass
+
+    @commands.Cog.listener
+    async def on_guild_channel_update(self, before, after):
+        pass
+
+    @commands.Cog.listener
+    async def on_guild_role_delete(self, role):
+        pass
+
+    @commands.Cog.listener
+    async def on_guild_role_create(self, role):
+        pass
+
+    @commands.Cog.listener
+    async def on_guild_role_update(self, before, after):
+        pass
+
+    @commands.Cog.listener
+    async def on_invite_create(self, invite):
+        pass
+
+    @commands.Cog.listener
+    async def on_invite_delete(self, invite):
         pass
 
 def setup(client):
