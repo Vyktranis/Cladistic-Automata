@@ -17,7 +17,6 @@ class Database(commands.Cog):
 
         await ctx.reply("Verification Process in DM's")
         first_message = await ctx.author.send("What is your Roblox Username? (Case Sensitive)")
-        ### FUNCTIONS
 
         def checkMessage(message):
             return message.channel == first_message.channel and message.author == ctx.author
@@ -50,7 +49,7 @@ class Database(commands.Cog):
         async with ctx.author.typing():
             code = " ".join([RandomWords().get_random_word() for _ in range(5)])
             verification_message = await ctx.author.send(f"Set this code to your About: {code}\n\nReact when complete!")
-            
+
         await verification_message.add_reaction("✅")
 
         reac, usr = await self.client.wait_for('reaction_add', check=checkReaction)

@@ -80,6 +80,12 @@ class RUser:
         e.timestamp = self.created
         return e
 
+    @classmethod
+    async def convert(ctx, argument):
+        member = commands.MemberConverter.convert(ctx, argument)
+        pass
+
+
 
 ############################################################################
 

@@ -10,6 +10,7 @@ Database Functions for the Vykdom Discord Bot.
 
 import pymongo
 
+from Objects import Errors, Models
 from config import DB_ADDRESS
 
 db = pymongo.MongoClient(DB_ADDRESS)["VYKTRANIS"]
@@ -49,3 +50,12 @@ def verify_account(discord_id, robloxUser):
                 }
             }
         )
+
+## Find Roblox User
+
+def roblox_user_from_discord_id(discord_id):
+    cursor = db["Roblox"].find_one({"_id" : discord_id})
+    if cursor is None:
+        raise Errors.RobloxUserNotInDatabase(f"{discord_id} could not be found in the database")
+    else:
+        return Models.RUser(cursor)

@@ -5,6 +5,7 @@
 # IMPORTS
 
 import discord
+import random
 from discord.colour import Color
 from discord.ext import commands
 
@@ -23,11 +24,16 @@ client = commands.Bot(
 )
 
 def embedFormat(user):
+    num = random.randint(0, 100)
+    print(num)
     e = discord.Embed(
         title="『 ۩ 』»› __**CLADISTIC PROFILE**__",
         description="""```diff
 -  ᚛ ▬▬▬▬▬▬▬▬▬▬▬▬▬〘PROGRESS〙▬▬▬▬▬▬▬▬▬▬▬▬▬ ᚜  -```
-🟥 🟥 🟥 🟥 🟥 🟥 🟥 🟥 🟥 ⬛ • **99%**""",
+{} • **{}%**""".format(
+        " ".join(["🟥" for _ in range((100 - num) % 10)]+["⬛" for _ in range(num % 10)]),
+        num
+    ),
         colour=0xb10f0f,
         url=user.link()
     )
