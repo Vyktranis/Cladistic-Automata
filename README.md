@@ -33,3 +33,12 @@ Main Vykdom Discord Bot
 
 * c!warmark [Tier] --> Profile of specific Warmark
 * c!warmark [set] [Tier] [[User], ..] --> Set's a Users or Users to a specific warmark
+
+### Other Features
+
+##### Audit Log
+
+* Message Deletion
+* Message Editing
+* Nickname Change
+* Role Added/Remove
