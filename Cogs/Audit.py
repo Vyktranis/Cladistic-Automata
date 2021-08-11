@@ -29,3 +29,4 @@ class Audit(commands.Cog):
     @commands.Cog.listener
     async def on_user_update(self, before, after):
         pass
+# Just filler
