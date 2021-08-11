@@ -1,4 +1,4 @@
-import discord, random
+import discord
 from discord.ext import commands
 
 class Audit(commands.Cog):
