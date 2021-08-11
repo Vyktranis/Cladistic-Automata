@@ -16,12 +16,7 @@ class Database(commands.Cog):
     async def verify(self, ctx):
 
         await ctx.reply("Verification Process in DM's")
-
-        ### VARIABLES
-
         first_message = await ctx.author.send("What is your Roblox Username? (Case Sensitive)")
-
-
         ### FUNCTIONS
 
         def checkMessage(message):
@@ -29,9 +24,6 @@ class Database(commands.Cog):
 
         def checkReaction(reaction, user):
             return reaction.message.channel == first_message.channel and user == ctx.author and reaction.emoji in ['✅', '❌']
-
-        ## NEEDS TO BE HEAVILY SIMPLIFIED
-        ## NEED TO CHUNK INTO FUNCTIONS
 
         name_message = await self.client.wait_for('message', check=checkMessage)
 
@@ -52,12 +44,13 @@ class Database(commands.Cog):
         reac, usr = await self.client.wait_for('reaction_add', check=checkReaction)
 
         if reac.emoji == '❌':
-            await ctx.author.send("Try again and get it right.")
+            await ctx.author.send("Try again.")
             return
 
-        code = " ".join([RandomWords().get_random_word() for _ in range(5)])
-
-        verification_message = await ctx.author.send(f"Set this code to your About: {code}\n\nReact when complete!")
+        async with ctx.author.typing():
+            code = " ".join([RandomWords().get_random_word() for _ in range(5)])
+            verification_message = await ctx.author.send(f"Set this code to your About: {code}\n\nReact when complete!")
+            
         await verification_message.add_reaction("✅")
 
         reac, usr = await self.client.wait_for('reaction_add', check=checkReaction)
