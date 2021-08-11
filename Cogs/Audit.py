@@ -25,3 +25,7 @@ class Audit(commands.Cog):
     @commands.Cog.listener
     async def on_member_remove(member):
         pass
+
+    @commands.Cog.listener
+    async def on_user_update(self, before, after):
+        pass
