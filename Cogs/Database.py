@@ -4,7 +4,7 @@ import secrets
 
 from discord.ext import commands
 from random_word import RandomWords
-from Functions import Roblox
+from Functions import Roblox, DB
 from Objects import Errors
 
 class Database(commands.Cog):
@@ -15,18 +15,23 @@ class Database(commands.Cog):
     @commands.command(aliases=["reverify"])
     async def verify(self, ctx):
 
-        ## NEEDS TO BE HEAVILY SIMPLIFIED
-        ## NEED TO CHUNK INTO FUNCTIONS
-
         await ctx.reply("Verification Process in DM's")
 
-        firstM = await ctx.author.send("What is your Roblox Username? (Case Sensitive)")
+        ### VARIABLES
+
+        first_message = await ctx.author.send("What is your Roblox Username? (Case Sensitive)")
+
+
+        ### FUNCTIONS
 
         def checkMessage(message):
-            return message.channel == firstM.channel and message.author == ctx.author
+            return message.channel == first_message.channel and message.author == ctx.author
 
         def checkReaction(reaction, user):
-            return reaction.message.channel == firstM.channel and user == ctx.author and reaction.emoji in ['✅', '❌']
+            return reaction.message.channel == first_message.channel and user == ctx.author and reaction.emoji in ['✅', '❌']
+
+        ## NEEDS TO BE HEAVILY SIMPLIFIED
+        ## NEED TO CHUNK INTO FUNCTIONS
 
         name_message = await self.client.wait_for('message', check=checkMessage)
 
@@ -59,13 +64,9 @@ class Database(commands.Cog):
 
         roblox_user2 = Roblox.getUserFromID(roblox_user.id)
 
-        print(roblox_user2.description)
-        print(code)
-
         if code in roblox_user2.description:
-            ## VERIFIED
+            DB.verify_account(ctx.author.id, roblox_user2)
             await ctx.author.send("Account Linked")
-
         else:
             await ctx.author.send("Failed, Please try again.")
 

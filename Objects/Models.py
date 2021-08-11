@@ -13,7 +13,6 @@ import datetime
 from discord.ext import commands
 from Functions import Roblox
 
-
 """
 RUser
     .display_name
@@ -28,9 +27,9 @@ RUser
 
 
 class RUser:
-    """Vykdom Member
+    """Roblox Member
 
-    This represents a Vykdom Member
+    This represents a Roblox Member
 
     parms:
         Roblox_data -- Discord Member or Database Data
@@ -43,11 +42,25 @@ class RUser:
         self.id = roblox_data["id"]
         self.banned = roblox_data["isBanned"]
         self.description = roblox_data["description"]
-        self.profile = Roblox.getUserThumbnailFromID(self.id)
-        self.created = datetime.datetime.strptime(
-            roblox_data["created"],
-            "%Y-%m-%dT%H:%M:%S.%fZ"
-        )
+
+        # So that it works whether it is from db or from roblox api
+        try:
+            self.profile = roblox_data["profile"]
+        except:
+            self.profile = Roblox.getUserThumbnailFromID(self.id)
+
+        # Sometimes %f is not there.
+        # Really fucking stupid
+        try:
+            self.created = datetime.datetime.strptime(
+                roblox_data["created"],
+                "%Y-%m-%dT%H:%M:%S.%fZ"
+            )
+        except:
+            self.created = datetime.datetime.strptime(
+                roblox_data["created"],
+                "%Y-%m-%dT%H:%M:%SZ"
+            )
 
     def link(self):
         return f"https://www.roblox.com/users/{self.id}/profile"
