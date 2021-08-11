@@ -43,4 +43,6 @@ async def test(ctx, id : int):
     rUser = Roblox.getUserFromID(id)
     await ctx.send(embed=embedFormat(rUser))
 
+client.load_extension("Cogs.Database")
+
 client.run(BOT_TOKEN)

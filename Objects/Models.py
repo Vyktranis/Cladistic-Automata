@@ -21,6 +21,7 @@ RUser
     .id
     .banned
     .profile
+    .description
     .created
         .link()
 """
@@ -41,6 +42,7 @@ class RUser:
         self.name = roblox_data["name"]
         self.id = roblox_data["id"]
         self.banned = roblox_data["isBanned"]
+        self.description = roblox_data["description"]
         self.profile = Roblox.getUserThumbnailFromID(self.id)
         self.created = datetime.datetime.strptime(
             roblox_data["created"],
@@ -49,6 +51,21 @@ class RUser:
 
     def link(self):
         return f"https://www.roblox.com/users/{self.id}/profile"
+
+    def embed(self):
+        e = discord.Embed(
+            title=self.name,
+            description=self.description,
+            url=self.link()
+        )
+        e.set_thumbnail(
+            url=self.profile
+        )
+        e.set_footer(
+            text=f"ID: {self.id} | Created"
+        )
+        e.timestamp = self.created
+        return e
 
 
 ############################################################################
@@ -110,7 +127,7 @@ class Medal:
         self.id
         self.name
         self.emoji
-        
+
         pass
 
     @classmethod
