@@ -51,16 +51,19 @@ class RUser:
 
         # Sometimes %f is not there.
         # Really fucking stupid
-        try:
-            self.created = datetime.datetime.strptime(
-                roblox_data["created"],
-                "%Y-%m-%dT%H:%M:%S.%fZ"
-            )
-        except:
-            self.created = datetime.datetime.strptime(
-                roblox_data["created"],
-                "%Y-%m-%dT%H:%M:%SZ"
-            )
+        if isinstance(roblox_data["created"], datetime.datetime):
+            self.created = roblox_data["created"]
+        else:
+            try:
+                self.created = datetime.datetime.strptime(
+                    roblox_data["created"],
+                    "%Y-%m-%dT%H:%M:%S.%fZ"
+                )
+            except:
+                self.created = datetime.datetime.strptime(
+                    roblox_data["created"],
+                    "%Y-%m-%dT%H:%M:%SZ"
+                )
 
     def link(self):
         return f"https://www.roblox.com/users/{self.id}/profile"
