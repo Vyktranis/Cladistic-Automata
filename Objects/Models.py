@@ -11,7 +11,7 @@ Models for the Vykdom Discord Bot.
 import discord
 import datetime
 from discord.ext import commands
-from Functions import Roblox, DM
+from Functions import Roblox, DB
 
 """
 RUser
@@ -86,7 +86,7 @@ class RUser:
     @classmethod
     async def convert(ctx, argument):
         member = commands.MemberConverter.convert(ctx, argument)
-        return DM.roblox_user_from_discord_id(member.id)
+        return DB.roblox_user_from_discord_id(member.id)
 
 
 
@@ -97,7 +97,6 @@ Vyktranian
     .id
     .name
     .discriminator
-        .avatar()
     .convert() # For function formatting 
 """
 
@@ -110,24 +109,23 @@ class Vyktranian:
         data -- Discord Member or Database Data
     """
 
-    def __init__(self, data, *, discord=None, roblox=None):
+    def __init__(self, data, discord=None, roblox=None):
         self.id
         self.name
         self.discriminator
-        self._avatar
+        self.medals
+        self.accolades
         self.discord = discord
         self.roblox = roblox
 
-    def avatar(self):
-        return f"https://cdn.discordapp.com/avatars/{self.id}/{self._avatar}.png"
-
     @classmethod
-    async def convert(ctx, argument):
-        member = commands.MemberConverter.convert(ctx, argument)
-        ## DB to get member data
-        
-        #return cls()
-        pass
+    async def convert(cls, ctx, argument):
+        member = commands.MemberConverter().convert(ctx, argument)
+
+        #cls(data, )
+
+    async def send(self, *args, **kwargs):
+        await self.discord.send(args, kwargs)
 
 #####################################################################################
 
@@ -155,3 +153,27 @@ class Medal:
     @classmethod
     async def convert(ctx, argument):
         pass
+
+"""
+Rank
+    .id
+    .name
+    .description
+    .classification
+"""
+
+class Rank:
+    """Rank
+
+    This represents a Vykdom Rank.
+    """
+    
+    def __init__(self, data):
+        self.id : int = data["id"]
+        self.name : str = data["name"]
+        self.description : str = data["description"]
+        self.family : str = data["family"]
+
+
+class Classification:
+    pass
