@@ -1,10 +1,14 @@
 import discord
 from discord.ext import commands
+from config import AUDIT_CHANNEL
+
+# FOR TIME BEING IMAGINE AUDIT_CHANNEL HAS A VALUE
 
 class Audit(commands.Cog):
     
     def __init__(self, client):
         self.client = client
+        # self.channel = client.get_channel(AUDIT_CHANNEL) # UNCOMMENT WHEN WORKING
 
     @commands.Cog.listener
     async def on_message_delete(self, message):
