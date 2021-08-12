@@ -11,7 +11,7 @@ Models for the Vykdom Discord Bot.
 import discord
 import datetime
 from discord.ext import commands
-from Functions import Roblox
+from Functions import Roblox, DM
 
 """
 RUser
@@ -83,7 +83,7 @@ class RUser:
     @classmethod
     async def convert(ctx, argument):
         member = commands.MemberConverter.convert(ctx, argument)
-        pass
+        return DM.roblox_user_from_discord_id(member.id)
 
 
 
