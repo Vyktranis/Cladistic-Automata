@@ -20,11 +20,8 @@ async def verify_user(ctx, client):
         await ctx.reply("Verification Process in DM's")
     first_message = await ctx.author.send("What is your Roblox Username (Case Sensitive) or Roblox ID?")
 
-    def checkMessage(message):
-        return message.channel == first_message.channel and message.author == ctx.author
-
-    def checkReaction(reaction, user):
-        return reaction.message.channel == first_message.channel and user == ctx.author and reaction.emoji in ['✅', '❌']
+    checkMessage = lambda message : message.channel == first_message.channel and message.author == ctx.author
+    checkReaction = lambda reaction, user : reaction.message.channel == first_message.channel and user == ctx.author and reaction.emoji in ['✅', '❌']
 
     name_message = await client.wait_for('message', check=checkMessage)
 
