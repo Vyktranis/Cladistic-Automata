@@ -14,7 +14,7 @@ class Database(commands.Cog):
     @commands.command(aliases=["reverify"])
     async def verify(self, ctx):
 
-        user, verified = Cuter.verify_user(ctx, self.client)
+        user, verified = await Cuter.verify_user(ctx, self.client)
 
         if verified:
             DB.verify_account(ctx.author.id, user)

@@ -54,8 +54,19 @@ def verify_account(discord_id, robloxUser):
 ## Find Roblox User
 
 def roblox_user_from_discord_id(discord_id):
+    """
+    This function gets a roblox user from the database using a discord_id
+    """
     cursor = db["Roblox"].find_one({"_id" : discord_id})
     if cursor is None:
         raise Errors.RobloxUserNotInDatabase(f"{discord_id} could not be found in the database")
     else:
         return Models.RUser(cursor)
+
+## Find Vyktranian
+
+def vyktranian_from_discord_id(discord_id):
+    """
+    This function gets a vyktranian user from a discord ID
+    """
+    pass
