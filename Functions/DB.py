@@ -18,7 +18,7 @@ db = pymongo.MongoClient(DB_ADDRESS)["VYKTRANIS"]
 
 ###### VERIFICATION #######
 
-def verify_account(discord_id, robloxUser):
+def verify_account(discord_user, robloxUser):
     """
     This functions add/updates the roblox user in the database
 
@@ -28,29 +28,50 @@ def verify_account(discord_id, robloxUser):
         - Update
     """
     try:
-        db["Roblox"].insert_one({
-            "_id" : discord_id,
-            "displayName" : robloxUser.display_name,
-            "name" : robloxUser.name,
-            "id" : robloxUser.id,
-            "isBanned" : robloxUser.banned,
-            "description" : robloxUser.description,
-            "profile" : robloxUser.profile
+        db["Members"].insert_one({
+            "_id" : discord_user.id,
+            "name" : discord_user.name,
+            "discriminator" : discord_user.discriminator,
+            "timezone" : "Eastern Standard Time",
+            "rank" : {
+                "id" : 0,
+                "name" : "Verified",
+                "description" : "Verified through the Bot",
+                "accolades" : 0,
+                "family" : ""
+            },
+            "medals" : [],
+            "accolades" : 0
         })
-    except:
-        db["Roblox"].update_one(
-            {"_id" : discord_id},
-            {
-                "$set" : {
-                    "displayName" : robloxUser.display_name,
-                    "name" : robloxUser.name,
-                    "id" : robloxUser.id,
-                    "isBanned" : robloxUser.banned,
-                    "description" : robloxUser.description,
-                    "profile" : robloxUser.profile
+    except pymongo.errors.DuplicateKeyError:
+        pass
+    finally:
+        try:
+            db["Roblox"].insert_one({
+                "_id" : discord_user.id,
+                "displayName" : robloxUser.display_name,
+                "name" : robloxUser.name,
+                "id" : robloxUser.id,
+                "isBanned" : robloxUser.banned,
+                "description" : robloxUser.description,
+                "profile" : robloxUser.profile,
+                "created" : robloxUser.created
+            })
+        except:
+            db["Roblox"].update_one(
+                {"_id" : discord_user.id},
+                {
+                    "$set" : {
+                        "displayName" : robloxUser.display_name,
+                        "name" : robloxUser.name,
+                        "id" : robloxUser.id,
+                        "isBanned" : robloxUser.banned,
+                        "description" : robloxUser.description,
+                        "profile" : robloxUser.profile,
+                        "created" : robloxUser.created
+                    }
                 }
-            }
-        )
+            )
 
 def add_vyktranian(Vyktranian):
     db["Members"].insert_one(
@@ -80,3 +101,12 @@ def vyktranian_from_discord_id(discord_id):
         raise Errors.VyktranisUserNotInDatabase(f"{discord_id} could not be found in the database")
     else:
         return cursor
+
+# Get Rank
+
+def rank_by_id(rank_id):
+    """
+    This function gets a rank from the id
+    """
+    cursor = db['Ranks'].find_one({"_id" : rank_id})
+    return cursor

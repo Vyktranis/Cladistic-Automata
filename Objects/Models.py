@@ -10,7 +10,6 @@ Models for the Vykdom Discord Bot.
 
 import discord
 import datetime
-from discord import colour
 from discord.ext import commands
 from Functions import Roblox, DB
 from Objects import Errors
@@ -112,8 +111,13 @@ Vyktranian
         .embed()
 """
 
-def accolate_percentage_display(current, next):
-    pass
+def percent_to_accolade(percent):
+    before = " ".join([ACCOLADE for _ in range(round(percent / 10))])
+    
+    after = " ".join(NONACCOLADE for _ in range(round((100 - percent) / 10))) if percent < 100 else ""
+
+    text = before + " " + after
+    return text
 
 class Vyktranian:
     """Vykdom Member
@@ -122,7 +126,8 @@ class Vyktranian:
 
     parms:
         data -- Database Data
-        discord -- 
+        discord -- Discord Member
+        roblox -- RUser
     """
 
     def __init__(self, data, discord=None, roblox=None):
@@ -150,7 +155,7 @@ class Vyktranian:
             ('id', self.id),
             ('name', self.name),
             ('discriminator', self.discriminator),
-            ('rank' , self.rank)
+            ('rank' , self.rank),
             ('medals', self.medals),
             ('accolades', self.accolades),
             ('discord', self.discord),
@@ -165,64 +170,101 @@ class Vyktranian:
     def __ne__(self, other):
         return not self.__eq__(other)
 
+    def _percent_til_next(self, rank):
+        if self.rank.id == 0 and self.accolades == 0:
+            return 0
+        return round(100 * (self.accolades / rank.accolades))
+
     def json(self):
         pass
 
     def db(self):
-        pass
+        return {
+            "_id" : self.id,
+            "name" : self.name,
+            "discriminator" : self.discriminator,
+            "rank" : self.rank.json(),
+            "clade" : None,
+            "subclade" : None,
+            "medals" : None,
+            "accolades" : self.accolades
+        }
 
-    def embed(self):
-        return discord.Embed(
+    def to_embed(self):
+
+        next_rank = Rank(DB.rank_by_id(self.rank.id + 1))
+        percent = self._percent_til_next(next_rank)
+
+        e = discord.Embed(
             title="『 ۩ 』» __**CLADISTIC PROFILE**__",
             description="""
             \♦  ᚛ ▬▬▬▬▬▬▬▬▬▬〘 {0} 〙▬▬▬▬▬▬▬▬▬▬ ᚜  \♦
 
-            > {3} • **{}*%*
-            >
-            > 0 {1} remaining to reach `N/A`. ({} {1})
-            > {1}•{}
+            > {3} • **{4}%**
+            > \u200B
+            > 0 {1} remaining to reach `{7}`. ({5} {1})
+            > {1} • {6}
 
             \♦  ᚛ ▬▬▬▬▬▬▬▬▬▬〘 {0} 〙▬▬▬▬▬▬▬▬▬▬ ᚜  \♦
             """.format(
                 VYKDOMWhite, 
                 ACCOLADE, 
-                NONACCOLADE
-
+                NONACCOLADE,
+                percent_to_accolade(percent),
+                percent,
+                next_rank.accolades,
+                self.accolades,
+                next_rank.name
             ),
             url=self.roblox.link(),
             colour=0xb10f0f
-        ).set_author(
+        )
+        e.set_author(
             name="The Vyktranian Dominion\nImperial Convocation Outside the Struggle",
             icon_url="https://t5.rbxcdn.com/cd461fc64aeaa4b332087bfddb7b4b29"
-        ).set_thumbnail(
+        )
+        e.set_thumbnail(
             url=self.roblox.profile
-        ).add_field(
+        )
+        e.add_field(
             name="__**RANK**__",
-            value="> `{}`".format(str(self.rank))
+            value="> `{}`".format(str(self.rank)),
+            inline=False
         ).add_field(
             name="__**CLASSIFICATION**__",
-            value="> `{}`".format(self.rank.family)
-        ).add_field(
+            value="> `{}`".format(self.rank.family or "\u200B"),
+            inline=False
+        )
+        e.add_field(
             name="__**TIMEZONE**__",
-            value="> `{}`".format(self.timezone)
-        ).add_field(
+            value="> `{}`".format(self.timezone),
+            inline=False
+        )
+        e.add_field(
             name="__**CLADE**__",
-            value="> `{}`".format(None)
-        ).add_field(
+            value="> `{}`".format(None),
+            inline=False
+        )
+        e.add_field(
             name="__**SUBCLADE**__",
-            value="> `{}`".format(None)
-        ).add_field(
+            value="> `{}`".format(None),
+            inline=False
+        )
+        e.add_field(
             name="__**DEPARTMENTS**__",
-            value="> {}\n\♦  ᚛ ▬▬▬▬▬▬▬▬▬▬〘 {} 〙▬▬▬▬▬▬▬▬▬▬ ᚜  \♦".format(None, VYKDOMWhite)#" ".join([f"`{dep}`" for dep in self.departments]))
-        ).set_footer(
+            value="> {}\n\♦  ᚛ ▬▬▬▬▬▬▬▬▬▬〘 {} 〙▬▬▬▬▬▬▬▬▬▬ ᚜  \♦".format("`None`", VYKDOMWhite),#" ".join([f"`{dep}`" for dep in self.departments]))
+            inline=False
+        )
+        e.set_footer(
             text="Cladistic Automated Systems",
             icon_url="https://t5.rbxcdn.com/cd461fc64aeaa4b332087bfddb7b4b29"
         )
+        return e
 
     @classmethod
     async def convert(cls, ctx, argument):
 
-        member = commands.MemberConverter().convert(ctx, argument)
+        member = await commands.MemberConverter().convert(ctx, argument)
         data = DB.vyktranian_from_discord_id(member.id)
         roblox = RUser(DB.roblox_user_from_discord_id(member.id))
 
@@ -267,7 +309,7 @@ class Medal:
         self.emoji = data["emoji"]
 
     @classmethod
-    async def convert(ctx, argument):
+    async def convert(cls, ctx, argument):
         pass
 
 """
@@ -294,10 +336,14 @@ class Rank:
         self.accolades = data["accolades"]
         self.family = data["family"]
 
-    async def convert(ctx, argument):
+    def __str__(self):
+        return self.name
+
+    @classmethod
+    async def convert(cls, ctx, argument):
         pass
 
-    def db(self):
+    def json(self):
         return {
             "id" : self.id,
             "name" : self.name,
