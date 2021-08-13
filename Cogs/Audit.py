@@ -12,7 +12,6 @@ class Audit(commands.Cog):
         self.channel = None
         self.get_channel.start()
 
-
     @tasks.loop(count = 1)
     async def get_channel(self):
         self.channel = await self.client.fetch_channel(AUDIT_CHANNEL)
@@ -20,44 +19,77 @@ class Audit(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
-        await self.channel.send(
-            embed=discord.Embed(
-                title=f"Message Deleted in {message.channel.name}",
-                description=message.content
-            ).set_author(
-                name=str(message.author),
-                icon_url=message.author.avatar_url
-            ).set_footer(
-                text=f"ID: {message.author.id}"
+        if not message.author.bot:
+            await self.channel.send(
+                    embed=discord.Embed(
+                    title=f"Message Deleted in {message.channel.name}",
+                    description=message.content
+                ).set_author(
+                    name=str(message.author),
+                    icon_url=message.author.avatar_url
+                ).set_footer(
+                    text=f"ID: {message.author.id}"
+                )
             )
-        )
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        # Ignore if a message is larger than a certain length since it will cause errors
-        # Will Find a way around it
-        if len(before.content) > 1900:
-            return
-        await self.channel.send(
-            embed=discord.Embed(
-                title=f"Message Edited in {before.channel.name}"
-            ).set_author(
-                name=str(before.author),
-                icon_url=before.author.avatar_url
-            ).add_field(
-                name="Before",
-                value=before.content
-            ).add_field(
-                name="After",
-                value=after.content
-            ).set_footer(
-                text=f"ID: {before.author.id}"
+        if not before.author.bot:
+            # Ignore if a message is larger than a certain length since it will cause errors
+            # Will Find a way around it
+            if len(before.content) > 1900:
+                return
+            await self.channel.send(
+                embed=discord.Embed(
+                    title=f"Message Edited in {before.channel.name}"
+                ).set_author(
+                    name=str(before.author),
+                    icon_url=before.author.avatar_url
+                ).add_field(
+                    name="Before",
+                    value=before.content
+                ).add_field(
+                    name="After",
+                    value=after.content
+                ).set_footer(
+                    text=f"ID: {before.author.id}"
+                )
             )
-        )
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        pass
+
+        if before.display_name != after.display_name:
+            embed=discord.Embed(title="Nickname Changed", description=f"**Before:** {before.display_name}\n**After:** {after.display_name}", color=0x1100ff)
+            embed.set_author(name=f"{before.name}#{before.discriminator}", icon_url=after.avatar_url)
+            embed.set_footer(text=f"ID: {after.id}")
+            await self.channel.send(embed=embed)
+
+        if before.name != after.name:
+            embed=discord.Embed(title="Name Changed", description=f"**Before:** {before.name}\n**After:** {after.name}", color=0x1100ff)
+            embed.set_author(name=f"{str(after)}", icon_url=after.avatar_url)
+            embed.set_footer(text=f"ID: {after.id}")
+            await self.channel.send(embed=embed)
+
+        if before.discriminator != after.discriminator:
+            embed=discord.Embed(title="Discriminator Changed", description=f"**Before:** #{before.discriminator}\n**After:** #{after.discriminator}", color=0x1100ff)
+            embed.set_author(name=f"{str(after)}", icon_url=after.avatar_url)
+            embed.set_footer(text=f"ID: {after.id}")
+            await self.channel.send(embed=embed)
+
+        if len(before.roles) < len(after.roles):
+            after_role = next(role for role in after.roles if role not in before.roles)
+            embed=discord.Embed(title="Role Added", description=after_role, color=0x1100ff)
+            embed.set_author(name=f"{str(after)}", icon_url=after.avatar_url)
+            embed.set_footer(text=f"ID: {after.id}")
+            await self.channel.send(embed=embed)
+
+        if len(before.roles) > len(after.roles):
+            after_role = next(role for role in before.roles if role not in after.roles)
+            embed=discord.Embed(title="Role Removed", description=after_role, color=0x1100ff)
+            embed.set_author(name=f"{str(after)}", icon_url=after.avatar_url)
+            embed.set_footer(text=f"ID: {after.id}")
+            await self.channel.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
