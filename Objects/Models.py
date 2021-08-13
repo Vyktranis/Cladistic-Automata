@@ -94,9 +94,10 @@ class RUser:
 
 """
 Vyktranian
-    .id
-    .name
-    .discriminator
+    .id : int
+    .name : str
+    .discriminator : int
+    .medals : list
     .convert() # For function formatting 
 """
 
@@ -110,16 +111,16 @@ class Vyktranian:
     """
 
     def __init__(self, data, discord=None, roblox=None):
-        self.id
-        self.name
-        self.discriminator
-        self.medals
-        self.accolades
+        self.id = data["_id"]
+        self.name = data["name"]
+        self.discriminator = data["discriminator"]
+        self.medals = [Medal(i) for i in data["medals"]]
+        self.accolades = data["accolades"]
         self.discord = discord
         self.roblox = roblox
 
     @classmethod
-    async def convert(cls, ctx, argument):
+    async def convert(self, ctx, argument):
         member = commands.MemberConverter().convert(ctx, argument)
 
         #cls(data, )
@@ -143,12 +144,13 @@ class Medal:
     This represents an Vyktranian award
     """
 
-    def __init__(self):
-        self.id
-        self.name
-        self.emoji
-
-        pass
+    def __init__(self, data):
+        try:
+            self.id = data["id"]
+        except:
+            self.id = data["_id"]
+        self.name = data["name"]
+        self.emoji = data["emoji"]
 
     @classmethod
     async def convert(ctx, argument):
@@ -169,10 +171,23 @@ class Rank:
     """
     
     def __init__(self, data):
-        self.id : int = data["id"]
-        self.name : str = data["name"]
-        self.description : str = data["description"]
-        self.family : str = data["family"]
+        self.id = data["id"] or data["_id"]
+        self.name = data["name"]
+        self.description = data["description"]
+        self.family = data["family"]
+
+    async def convert(ctx, argument):
+        pass
+
+    def db(self):
+        return {
+            "id" : self.id,
+            "name" : self.name,
+            "description" : self.description,
+            "family" : self.family
+        }
+
+
 
 
 class Classification:
