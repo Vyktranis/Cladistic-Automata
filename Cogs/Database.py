@@ -1,3 +1,4 @@
+from typing_extensions import ParamSpecKwargs
 import discord
 import requests
 import secrets
@@ -26,6 +27,15 @@ class Database(commands.Cog):
     @commands.command()
     async def update(self, ctx):
         pass
+
+    @commands.command()
+    async def setchannel(self, ctx, channelType):
+        if channelType.lower() == "verify":
+            pass
+        elif channelType.lower() == "commands":
+            pass
+        else:
+            await ctx.send("That is not a valid Channel Type.")
 
 def setup(client):
     client.add_cog(Database(client))

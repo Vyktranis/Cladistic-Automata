@@ -8,6 +8,7 @@ Database Functions for the Vykdom Discord Bot.
 :license: GNU General Public License v3.0, see LICENSE for more details.
 """
 
+import discord
 import pymongo
 
 from Objects import Errors, Models
@@ -66,7 +67,7 @@ def roblox_user_from_discord_id(discord_id):
     if cursor is None:
         raise Errors.RobloxUserNotInDatabase(f"{discord_id} could not be found in the database")
     else:
-        return Models.RUser(cursor)
+        return cursor
 
 ## Find Vyktranian
 
@@ -74,4 +75,8 @@ def vyktranian_from_discord_id(discord_id):
     """
     This function gets a vyktranian user from a discord ID
     """
-    pass
+    cursor = db["Members"].find_one({"_id" : discord_id})
+    if cursor is None:
+        raise Errors.VyktranisUserNotInDatabase(f"{discord_id} could not be found in the database")
+    else:
+        return cursor

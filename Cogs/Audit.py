@@ -23,6 +23,7 @@ class Audit(commands.Cog):
             await self.channel.send(
                     embed=discord.Embed(
                     title=f"Message Deleted in {message.channel.name}",
+                    colour=0xff0000,
                     description=message.content
                 ).set_author(
                     name=str(message.author),
@@ -41,7 +42,8 @@ class Audit(commands.Cog):
                 return
             await self.channel.send(
                 embed=discord.Embed(
-                    title=f"Message Edited in {before.channel.name}"
+                    title=f"Message Edited in {before.channel.name}",
+                    colour=0xffbb00
                 ).set_author(
                     name=str(before.author),
                     icon_url=before.author.avatar_url

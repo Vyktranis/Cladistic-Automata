@@ -10,8 +10,18 @@ Models for the Vykdom Discord Bot.
 
 import discord
 import datetime
+from discord import colour
 from discord.ext import commands
 from Functions import Roblox, DB
+from Objects import Errors
+from config import VYKDOMWhite, ACCOLADE, NONACCOLADE
+
+__all__ = (
+    'RUser',
+    'Vyktranian',
+    'Medal',
+    'Rank'
+)
 
 """
 RUser
@@ -98,8 +108,12 @@ Vyktranian
     .name : str
     .discriminator : int
     .medals : list
-    .convert() # For function formatting 
+.convert() # For function formatting 
+        .embed()
 """
+
+def accolate_percentage_display(current, next):
+    pass
 
 class Vyktranian:
     """Vykdom Member
@@ -107,26 +121,125 @@ class Vyktranian:
     This represents a Vykdom Member
 
     parms:
-        data -- Discord Member or Database Data
+        data -- Database Data
+        discord -- 
     """
 
     def __init__(self, data, discord=None, roblox=None):
-        self.id = data["_id"]
+        try:
+            self.id = data["_id"]
+        except:
+            self.id = data["id"]
         self.name = data["name"]
         self.discriminator = data["discriminator"]
+        self.timezone = data["timezone"]
+        self.rank = Rank(data["rank"])
+        # self.clade = Clade(data["clade"])
+        # self.subclade = Subclade(data["subclade"])
         self.medals = [Medal(i) for i in data["medals"]]
         self.accolades = data["accolades"]
         self.discord = discord
+        self._user = None
         self.roblox = roblox
 
-    @classmethod
-    async def convert(self, ctx, argument):
-        member = commands.MemberConverter().convert(ctx, argument)
+    def __str__(self):
+        return f"{self.name}#{self.discriminator}"
 
-        #cls(data, )
+    def __repr__(self):
+        attrs = [
+            ('id', self.id),
+            ('name', self.name),
+            ('discriminator', self.discriminator),
+            ('rank' , self.rank)
+            ('medals', self.medals),
+            ('accolades', self.accolades),
+            ('discord', self.discord),
+            ('roblox', self.roblox)
+        ]
+        innards = ' '.join('%s=%r' % t for t in attrs)
+        return f"<{self.__class__.__name__} {innards}>"
+
+    def __eq__(self, other):
+        return isinstance(self, other) and other.id == self.id
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def json(self):
+        pass
+
+    def db(self):
+        pass
+
+    def embed(self):
+        return discord.Embed(
+            title="『 ۩ 』» __**CLADISTIC PROFILE**__",
+            description="""
+            \♦  ᚛ ▬▬▬▬▬▬▬▬▬▬〘 {0} 〙▬▬▬▬▬▬▬▬▬▬ ᚜  \♦
+
+            > {3} • **{}*%*
+            >
+            > 0 {1} remaining to reach `N/A`. ({} {1})
+            > {1}•{}
+
+            \♦  ᚛ ▬▬▬▬▬▬▬▬▬▬〘 {0} 〙▬▬▬▬▬▬▬▬▬▬ ᚜  \♦
+            """.format(
+                VYKDOMWhite, 
+                ACCOLADE, 
+                NONACCOLADE
+
+            ),
+            url=self.roblox.link(),
+            colour=0xb10f0f
+        ).set_author(
+            name="The Vyktranian Dominion\nImperial Convocation Outside the Struggle",
+            icon_url="https://t5.rbxcdn.com/cd461fc64aeaa4b332087bfddb7b4b29"
+        ).set_thumbnail(
+            url=self.roblox.profile
+        ).add_field(
+            name="__**RANK**__",
+            value="> `{}`".format(str(self.rank))
+        ).add_field(
+            name="__**CLASSIFICATION**__",
+            value="> `{}`".format(self.rank.family)
+        ).add_field(
+            name="__**TIMEZONE**__",
+            value="> `{}`".format(self.timezone)
+        ).add_field(
+            name="__**CLADE**__",
+            value="> `{}`".format(None)
+        ).add_field(
+            name="__**SUBCLADE**__",
+            value="> `{}`".format(None)
+        ).add_field(
+            name="__**DEPARTMENTS**__",
+            value="> {}\n\♦  ᚛ ▬▬▬▬▬▬▬▬▬▬〘 {} 〙▬▬▬▬▬▬▬▬▬▬ ᚜  \♦".format(None, VYKDOMWhite)#" ".join([f"`{dep}`" for dep in self.departments]))
+        ).set_footer(
+            text="Cladistic Automated Systems",
+            icon_url="https://t5.rbxcdn.com/cd461fc64aeaa4b332087bfddb7b4b29"
+        )
+
+    @classmethod
+    async def convert(cls, ctx, argument):
+
+        member = commands.MemberConverter().convert(ctx, argument)
+        data = DB.vyktranian_from_discord_id(member.id)
+        roblox = RUser(DB.roblox_user_from_discord_id(member.id))
+
+        return cls(data, member, roblox)
 
     async def send(self, *args, **kwargs):
-        await self.discord.send(args, kwargs)
+        if self.discord:
+            await self.discord.send(*args, **kwargs)
+        elif self._user: # Doubt I'd ever get here but just for backup            
+            await self._user.send(*args, **kwargs)
+        else:
+            raise Errors.CannotSendToUser(f"Cannot send PM to {self.name}")
+
+    def embed(self):
+        pass
+
+
 
 #####################################################################################
 
@@ -150,6 +263,7 @@ class Medal:
         except:
             self.id = data["_id"]
         self.name = data["name"]
+        self.description = data["description"]
         self.emoji = data["emoji"]
 
     @classmethod
@@ -171,9 +285,13 @@ class Rank:
     """
     
     def __init__(self, data):
-        self.id = data["id"] or data["_id"]
+        try:
+            self.id = data["id"]
+        except:
+            self.id = data["_id"]
         self.name = data["name"]
         self.description = data["description"]
+        self.accolades = data["accolades"]
         self.family = data["family"]
 
     async def convert(ctx, argument):
@@ -187,8 +305,32 @@ class Rank:
             "family" : self.family
         }
 
+"""
+Clade
+    .id
+    .name
+    .description
+"""
 
+class Clade:
+    pass
 
+"""
+Subclade
+    .id
+    .name
+    .description
+"""
 
-class Classification:
+class Subclade:
+    pass
+
+"""
+Department
+    .id
+    .name
+    .description
+"""
+
+class Department:
     pass

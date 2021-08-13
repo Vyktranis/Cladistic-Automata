@@ -48,10 +48,14 @@ async def verify_user(ctx, client):
         await ctx.author.send("Try again.")
         return
 
-    async with ctx.author.typing():
-        code = " ".join([RandomWords().get_random_word() for _ in range(5)])
-        verification_message = await ctx.author.send(f"Set this code to your About: {code}\n\nReact when complete!")
-        await verification_message.add_reaction("✅")
+    code = " ".join([RandomWords().get_random_word() for _ in range(5)])
+    verification_message = await ctx.author.send(
+        embed=discord.Embed(
+            title="Verification Code",
+            description=f"Set \"{code}\" to your Roblox About and react when complete!"
+        ) 
+    )
+    await verification_message.add_reaction("✅")
 
     reac, usr = await client.wait_for('reaction_add', check=checkReaction)
 
