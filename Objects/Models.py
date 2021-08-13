@@ -74,6 +74,19 @@ class RUser:
                     "%Y-%m-%dT%H:%M:%SZ"
                 )
 
+        def __repr__(self):
+            attrs = [
+                ('id', self.id),
+                ('name', self.name),
+                ('display_name', self.display_name),
+                ('banned' , self.banned),
+                ('description', self.description),
+                ('profile', self.profile),
+                ('created', self.created)
+            ]
+            innards = ' '.join('%s=%r' % t for t in attrs)
+            return f"<{self.__class__.__name__} {innards}>"
+
     def link(self):
         return f"https://www.roblox.com/users/{self.id}/profile"
 
@@ -190,7 +203,7 @@ class Vyktranian:
             "accolades" : self.accolades
         }
 
-    def to_embed(self):
+    def embed(self):
 
         next_rank = Rank(DB.rank_by_id(self.rank.id + 1))
         percent = self._percent_til_next(next_rank)
@@ -278,9 +291,6 @@ class Vyktranian:
         else:
             raise Errors.CannotSendToUser(f"Cannot send PM to {self.name}")
 
-    def embed(self):
-        pass
-
 
 
 #####################################################################################
@@ -338,6 +348,17 @@ class Rank:
 
     def __str__(self):
         return self.name
+
+    def __repr__(self):
+        attrs = [
+            ('id', self.id),
+            ('name', self.name),
+            ('description', self.description),
+            ('accolades', self.accolades),
+            ('family', self.family)
+        ]
+        innards = ' '.join('%s=%r' % t for t in attrs)
+        return f"<{self.__class__.__name__} {innards}>"
 
     @classmethod
     async def convert(cls, ctx, argument):

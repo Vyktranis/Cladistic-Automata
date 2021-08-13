@@ -25,8 +25,7 @@ class Database(commands.Cog):
     @commands.command()
     async def profile(self, ctx, user : Models.Vyktranian = None):
         user = user if user is not None else await Models.Vyktranian.convert(ctx, str(ctx.author.id))
-        await ctx.send(content='`Viewing cladistic profile`', embed=user.to_embed())
-
+        await ctx.send(content='`Viewing cladistic profile`', embed=user.embed())
 
     @commands.command()
     async def update(self, ctx):
