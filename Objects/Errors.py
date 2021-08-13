@@ -39,3 +39,10 @@ class RobloxUserNotInDatabase(Exception):
     This Error is used when a roblox user cannot be found in the database.
     """
     pass
+
+class VyktranisUserNotInDatabase(Exception):
+    """VyktranisUSerNotInDatabase
+
+    This Error is used when a Vyktranis User cannot be found in the database.
+    """
+    pass

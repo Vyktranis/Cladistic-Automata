@@ -51,6 +51,11 @@ def verify_account(discord_id, robloxUser):
             }
         )
 
+def add_vyktranian(Vyktranian):
+    db["Members"].insert_one(
+        Vyktranian.db()
+    )
+
 ## Find Roblox User
 
 def roblox_user_from_discord_id(discord_id):
