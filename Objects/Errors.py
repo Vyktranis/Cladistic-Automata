@@ -42,8 +42,8 @@ class RobloxUserNotInDatabase(discord.DiscordException):
     """
     pass
 
-class VyktranisUserNotInDatabase(discord.DiscordException):
-    """VyktranisUSerNotInDatabase
+class VyktranianUserNotInDatabase(discord.DiscordException):
+    """VyktranianUSerNotInDatabase
 
     This Error is used when a Vyktranis User cannot be found in the database.
     """

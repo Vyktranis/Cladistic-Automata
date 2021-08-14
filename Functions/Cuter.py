@@ -8,6 +8,7 @@ Functions that are too ugly will be put here for the Vykdom Discord Bot.
 :license: GNU General Public License v3.0, see LICENSE for more details.
 """
 import discord
+import datetime
 
 from random_word import RandomWords
 from Functions import Roblox, DB
@@ -32,7 +33,7 @@ async def verify_user(ctx, client):
             roblox_user = Roblox.getUserFromName(name_message.content)
     except Errors.RobloxNamesNotFound or Errors.RobloxUserNotFound:
         await ctx.send("Could not find any User.\nTry again and make sure its case sensitive.")
-        return
+        raise Exception("Poop")
 
     checking = await ctx.author.send(
         content="Is this you?",
@@ -46,7 +47,7 @@ async def verify_user(ctx, client):
 
     if reac.emoji == '❌':
         await ctx.author.send("Try again.")
-        return
+        raise Exception("Poop")
 
     code = " ".join([RandomWords().get_random_word() for _ in range(5)])
     verification_message = await ctx.author.send(
@@ -61,4 +62,8 @@ async def verify_user(ctx, client):
 
     roblox_user2 = Roblox.getUserFromID(roblox_user.id)
 
-    return (roblox_user2, code in roblox_user2.description)
+    await ctx.author.send("Go to https://kevinnovak.github.io/Time-Zone-Picker/ , copy and paste here.")
+
+    message = await client.wait_for('message', check=checkMessage)
+
+    return (roblox_user2, code in roblox_user2.description, message.content)

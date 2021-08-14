@@ -18,7 +18,7 @@ db = pymongo.MongoClient(DB_ADDRESS)["VYKTRANIS"]
 
 ###### VERIFICATION #######
 
-def verify_account(discord_user, robloxUser):
+def verify_account(discord_user, robloxUser, timezone=None):
     """
     This functions add/updates the roblox user in the database
 
@@ -32,10 +32,10 @@ def verify_account(discord_user, robloxUser):
             "_id" : discord_user.id,
             "name" : discord_user.name,
             "discriminator" : discord_user.discriminator,
-            "timezone" : "Eastern Standard Time",
+            "timezone" : "Eastern Standard Time" if timezone is None else timezone,
             "rank" : {
                 "id" : 0,
-                "name" : "Verified",
+                "name" : "Ascendant",
                 "description" : "Verified through the Bot",
                 "accolades" : 0,
                 "family" : ""
@@ -44,7 +44,8 @@ def verify_account(discord_user, robloxUser):
             "accolades" : 0
         })
     except pymongo.errors.DuplicateKeyError:
-        pass
+        if timezone:
+            update_vyktranian_user(discord_user.id, tz=timezone)
     finally:
         try:
             db["Roblox"].insert_one({
@@ -98,9 +99,33 @@ def vyktranian_from_discord_id(discord_id):
     """
     cursor = db["Members"].find_one({"_id" : discord_id})
     if cursor is None:
-        raise Errors.VyktranisUserNotInDatabase(f"{discord_id} could not be found in the database")
+        raise Errors.VyktranianUserNotInDatabase(f"{discord_id} could not be found in the database")
     else:
         return cursor
+
+def update_vyktranian_user(discord_id, *, tz=None, rank=None, clade=None, subclade=None, departments=None, medals=None, accolades=None):
+
+    data = {}
+
+    if tz:
+        data["timezone"] = tz
+    if rank:
+        data["rank"] = rank
+    if clade:
+        data["clade"] = clade
+    if subclade:
+        data["subclade"] = subclade
+    if departments:
+        data["departments"] = departments
+    if medals:
+        data["medals"] = medals
+    if accolades:
+        data["accolades"] = accolades
+
+    db["Members"].update_one(
+        {"_id" : discord_id},
+        data
+    )
 
 # Get Rank
 

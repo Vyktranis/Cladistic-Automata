@@ -35,7 +35,7 @@ class Audit(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        if not before.author.bot:
+        if not before.author.bot and before.content != after.content:
             # Ignore if a message is larger than a certain length since it will cause errors
             # Will Find a way around it
             if len(before.content) > 1900:

@@ -19,7 +19,9 @@ __all__ = (
     'RUser',
     'Vyktranian',
     'Medal',
-    'Rank'
+    'Rank',
+    'Clade',
+    'Subclade'
 )
 
 """
@@ -154,6 +156,7 @@ class Vyktranian:
         self.rank = Rank(data["rank"])
         # self.clade = Clade(data["clade"])
         # self.subclade = Subclade(data["subclade"])
+        # self.departments = [Department(d) for d in data["departments"]]
         self.medals = [Medal(i) for i in data["medals"]]
         self.accolades = data["accolades"]
         self.discord = discord
@@ -189,7 +192,16 @@ class Vyktranian:
         return round(100 * (self.accolades / rank.accolades))
 
     def json(self):
-        pass
+        return {
+            "id" : self.id,
+            "name" : self.name,
+            "discriminator" : self.discriminator,
+            "rank" : self.rank.json(),
+            "clade" : None,
+            "subclade" : None,
+            "medals" : None,
+            "accolades" : self.accolades
+        }
 
     def db(self):
         return {
@@ -209,13 +221,13 @@ class Vyktranian:
         percent = self._percent_til_next(next_rank)
 
         e = discord.Embed(
-            title="『 ۩ 』» __**CLADISTIC PROFILE**__",
+            title=f"『 ۩ 』» __**{self.roblox.name}**__",
             description="""
             \♦  ᚛ ▬▬▬▬▬▬▬▬▬▬〘 {0} 〙▬▬▬▬▬▬▬▬▬▬ ᚜  \♦
 
             > {3} • **{4}%**
             > \u200B
-            > 0 {1} remaining to reach `{7}`. ({5} {1})
+            > {8} {1} remaining to reach `{7}`. ({5} {1})
             > {1} • {6}
 
             \♦  ᚛ ▬▬▬▬▬▬▬▬▬▬〘 {0} 〙▬▬▬▬▬▬▬▬▬▬ ᚜  \♦
@@ -227,10 +239,11 @@ class Vyktranian:
                 percent,
                 next_rank.accolades,
                 self.accolades,
-                next_rank.name
+                next_rank.name,
+                next_rank.accolades - self.accolades
             ),
             url=self.roblox.link(),
-            colour=0xb10f0f
+            colour=0xe90000
         )
         e.set_author(
             name="The Vyktranian Dominion\nImperial Convocation Outside the Struggle",
@@ -264,15 +277,82 @@ class Vyktranian:
             inline=False
         )
         e.add_field(
-            name="__**DEPARTMENTS**__",
-            value="> {}\n\♦  ᚛ ▬▬▬▬▬▬▬▬▬▬〘 {} 〙▬▬▬▬▬▬▬▬▬▬ ᚜  \♦".format("`None`", VYKDOMWhite),#" ".join([f"`{dep}`" for dep in self.departments]))
+            name="__**DEPARTMENT(S)**__",
+            value="> {}\n\♦  ᚛ ▬▬▬▬▬▬▬▬▬▬〘 {} 〙▬▬▬▬▬▬▬▬▬▬ ᚜  \♦".format("`None`", VYKDOMWhite),# Later " ".join([f"`{dep}`" for dep in self.departments])
             inline=False
         )
         e.set_footer(
             text="Cladistic Automated Systems",
             icon_url="https://t5.rbxcdn.com/cd461fc64aeaa4b332087bfddb7b4b29"
         )
+        e.timestamp = datetime.datetime.utcnow()
         return e
+
+    def set(self, *, timezone=None, rank=None, clade=None, subclade=None, accolades=None):
+        if timezone:
+            self.timezone = timezone
+        if rank:
+            self.rank = rank
+        if clade:
+            self.clade = clade
+        if subclade:
+            self.subsclade = subclade
+        if accolades:
+            self.accolades = accolades
+            
+        DB.update_vyktranian_user(
+            self.id,
+            tz=timezone,
+            rank=rank,
+            clade=clade,
+            subclade=subclade,
+            accolades=accolades
+        )
+
+    def add(self, *, departments=None, medals=None, accolades=None):
+        if departments:
+            if type(departments) == list:
+                departments = self.departments + departments
+            else:
+                departments = self.departments + [departments]
+            self.departments = departments
+        if medals:
+            if type(medals) == list:
+                medals = self.medals + medals
+            else:
+                medals = self.medals + [medals]
+            self.medals = medals
+        if accolades:
+            self.accolades += accolades
+
+        DB.update_vyktranian_user(
+            self.id,
+            departments=self.departments,
+            medals=self.medals,
+            accolades=self.accolades
+        )
+            
+
+    def remove(self, *, departments=None, medals=None, accolades=None):
+        if departments:
+            if type(departments) == list:
+                self.departments = filter(lambda x: x not in departments, self.departments)
+            else:
+                self.departments.remove(departments)
+        if medals:
+            if type(medals) == list:
+                self.medals = filter(lambda x: x not in medals, self.medals)
+            else:
+                medals = self.medals + [medals]
+        if accolades:
+            self.accolades -= accolades
+
+        DB.update_vyktranian_user(
+            self.id,
+            departments=self.departments,
+            medals=self.medals,
+            accolades=self.accolades
+        )
 
     @classmethod
     async def convert(cls, ctx, argument):
