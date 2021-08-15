@@ -126,14 +126,6 @@ Vyktranian
         .embed()
 """
 
-def percent_to_accolade(percent):
-    before = " ".join([ACCOLADE for _ in range(round(percent / 10))])
-    
-    after = " ".join(NONACCOLADE for _ in range(round((100 - percent) / 10))) if percent < 100 else ""
-
-    text = before + " " + after
-    return text
-
 class Vyktranian:
     """Vykdom Member
 
@@ -154,10 +146,19 @@ class Vyktranian:
         self.discriminator = data["discriminator"]
         self.timezone = data["timezone"]
         self.rank = Rank(data["rank"])
-        # self.clade = Clade(data["clade"])
-        # self.subclade = Subclade(data["subclade"])
-        # self.departments = [Department(d) for d in data["departments"]]
-        self.medals = [Medal(i) for i in data["medals"]]
+        self.clade = Clade(data["clade"])
+        try:
+            self.subclade = Subclade(data["subclade"])
+        except:
+            self.subclade = None
+        try:
+            self.departments = [Department(d) for d in data["departments"]]
+        except:
+            self.departments = None
+        try:
+            self.medals = [Medal(i) for i in data["medals"]]
+        except:
+            self.medals = None
         self.accolades = data["accolades"]
         self.discord = discord
         self._user = None
@@ -191,6 +192,14 @@ class Vyktranian:
             return 0
         return round(100 * (self.accolades / rank.accolades))
 
+    def _percent_to_accolade(self, percent):
+        before = " ".join([ACCOLADE for _ in range(round(percent / 10))])
+    
+        after = " ".join(NONACCOLADE for _ in range(round((100 - percent) / 10))) if percent < 100 else ""
+
+        text = before + " " + after
+        return text
+        
     def json(self):
         return {
             "id" : self.id,
@@ -235,7 +244,7 @@ class Vyktranian:
                 VYKDOMWhite, 
                 ACCOLADE, 
                 NONACCOLADE,
-                percent_to_accolade(percent),
+                self._percent_to_accolade(percent),
                 percent,
                 next_rank.accolades,
                 self.accolades,
@@ -442,13 +451,20 @@ class Rank:
 
     @classmethod
     async def convert(cls, ctx, argument):
+        """
+        This will look at argument for
+
+        -   ID
+        -   Name
+        -   RoleID
+        """
         pass
 
     def json(self):
         return {
             "id" : self.id,
             "name" : self.name,
-            "description" : self.description,
+            "description"  : self.description,
             "family" : self.family
         }
 
@@ -460,7 +476,14 @@ Clade
 """
 
 class Clade:
-    pass
+
+    def __init__(self, data):
+        try:
+            self.id = data["_id"]
+        except:
+            self.id = data["id"]
+        self.name = data["name"]
+        self.description = data["description"]
 
 """
 Subclade
@@ -470,7 +493,14 @@ Subclade
 """
 
 class Subclade:
-    pass
+
+    def __init__(self, data):
+        try:
+            self.id = data["_id"]
+        except:
+            self.id = data["id"]
+        self.name = data["name"]
+        self.description = data["description"]
 
 """
 Department
@@ -480,4 +510,11 @@ Department
 """
 
 class Department:
-    pass
+
+    def __init__(self, data):
+        try:
+            self.id = data["_id"]
+        except:
+            self.id = data["id"]
+        self.name = data["name"]
+        self.description = data["description"]
