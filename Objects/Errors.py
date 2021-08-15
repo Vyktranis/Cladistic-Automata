@@ -49,7 +49,7 @@ class VyktranianUserNotInDatabase(discord.DiscordException):
     """
     pass
 
-## Models
+## Converters
 
-class CannotSendToUser(Exception):
+class CannotFindRank(discord.DiscordException):
     pass

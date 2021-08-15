@@ -434,6 +434,10 @@ class Rank:
         self.description = data["description"]
         self.accolades = data["accolades"]
         self.family = data["family"]
+        try:
+            self._roles = data["roles"]
+        except:
+            self._roles = None
 
     def __str__(self):
         return self.name
@@ -484,6 +488,10 @@ class Clade:
             self.id = data["id"]
         self.name = data["name"]
         self.description = data["description"]
+
+    @classmethod
+    async def convert(cls, ctx, argument):
+        pass
 
 """
 Subclade

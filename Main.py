@@ -11,7 +11,7 @@ from discord.ext import commands, menus
 
 from Functions import *
 from config import BOT_TOKEN
-from Objects.Pages import VyktranianMenu
+from Objects import Pages
 
 ################################
 
@@ -34,11 +34,6 @@ client = commands.Bot(
 @client.event
 async def on_ready():
     print("Online")
-
-@client.command()
-async def test(ctx):
-    m = VyktranianMenu()
-    await m.start(ctx)
 
 client.load_extension("Cogs.Database")
 client.load_extension("Cogs.Audit")
