@@ -37,6 +37,11 @@ client = commands.Bot(
 async def on_ready():
     print("Online")
 
+@client.command()
+async def test(ctx):
+    await ctx.reply("Hello")
+
+
 client.load_extension("Cogs.Database")
 client.load_extension("Cogs.Audit")
 client.load_extension("Cogs.Accolades")
