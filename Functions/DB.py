@@ -9,12 +9,13 @@ Database Functions for the Vykdom Discord Bot.
 """
 
 import discord
+import certifi
 import pymongo
 
 from Objects import Errors, Models
 from config import DB_ADDRESS
 
-db = pymongo.MongoClient(DB_ADDRESS)["VYKTRANIS"]
+db = pymongo.MongoClient(DB_ADDRESS, tlsCAFile=certifi.where())["VYKTRANIS"]
 
 ###### VERIFICATION #######
 

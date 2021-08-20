@@ -5,7 +5,6 @@
 # IMPORTS
 
 import discord
-#testing
 import logging
 import random
 from discord.ext import commands, menus
@@ -41,7 +40,6 @@ async def on_ready():
 @client.command()
 async def test(ctx):
     await ctx.reply("Hello")
-
 
 client.load_extension("Cogs.Database")
 client.load_extension("Cogs.Audit")
