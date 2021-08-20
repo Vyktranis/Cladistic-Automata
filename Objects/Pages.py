@@ -6,22 +6,30 @@ async def remove_and_readd(ctx, payload):
 
 class VyktranianMenu(menus.Menu):
 
-    def __init__(self):
+    def __init__(self, main, medal=None, audit=None):
         super().__init__(timeout=None)
+        self.main = main
+        self.medal = medal
+        self.audit = audit
 
     async def send_initial_message(self, ctx, channel):
-        return await channel.send("Hi, This is a test")
+        self.id = ctx.author.id
+        return await channel.send(content='`Viewing cladistic profile.`',embed=self.main)
 
-    @menus.button('<:accolade:867969813337743370>')
-    async def on_accolade(self, payload):
-        await self.message.edit(content="You pressed on the accolade")
+    @menus.button('📊')
+    async def main(self, payload):
+        if payload.user_id == self.id:
+            await self.message.edit(content='`Viewing cladistic profile.`', embed=self.main)
         await remove_and_readd(self.ctx, payload)
 
-    @menus.button('<:nonaccolade:867969813220302888>')
-    async def on_nonaccolade(self, payload):
-        await self.message.edit(content="You pressed on the nonaccolade")
+    @menus.button('🎖️')
+    async def medal(self, payload):
+        if payload.user_id == self.id:
+            await self.message.edit(content="`Viewing cladistic medals.`", embed=self.medal)
         await remove_and_readd(self.ctx, payload)
 
-    @menus.button('⏹️')
-    async def on_stop(self, payload):
-        self.stop()
+    @menus.button('🔖')
+    async def log(self, payload):
+        if payload.user_id == self.id:
+            await self.message.edit(content="Bookmark Page", embed=self.audit)
+        await remove_and_readd(self.ctx, payload)

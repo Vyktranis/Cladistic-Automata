@@ -10,9 +10,10 @@ Models for the Vykdom Discord Bot.
 
 import discord
 import datetime
+import copy
 from discord.ext import commands
 from Functions import Roblox, DB
-from Objects import Errors
+from Objects import Errors, Pages
 from config import VYKDOMWhite, ACCOLADE, NONACCOLADE
 
 __all__ = (
@@ -76,18 +77,18 @@ class RUser:
                     "%Y-%m-%dT%H:%M:%SZ"
                 )
 
-        def __repr__(self):
-            attrs = [
-                ('id', self.id),
-                ('name', self.name),
-                ('display_name', self.display_name),
-                ('banned' , self.banned),
-                ('description', self.description),
-                ('profile', self.profile),
-                ('created', self.created)
-            ]
-            innards = ' '.join('%s=%r' % t for t in attrs)
-            return f"<{self.__class__.__name__} {innards}>"
+    def __repr__(self):
+        attrs = [
+            ('id', self.id),
+            ('name', self.name),
+            ('display_name', self.display_name),
+            ('banned' , self.banned),
+            ('description', self.description),
+            ('profile', self.profile),
+            ('created', self.created)
+        ]
+        innards = ' '.join('%s=%r' % t for t in attrs)
+        return f"<{self.__class__.__name__} {innards}>"
 
     def link(self):
         return f"https://www.roblox.com/users/{self.id}/profile"
@@ -116,25 +117,16 @@ class RUser:
 
 ############################################################################
 
-"""
-Vyktranian
-    .id : int
-    .name : str
-    .discriminator : int
-    .medals : list
-.convert() # For function formatting 
-        .embed()
-"""
-
 class Vyktranian:
     """Vykdom Member
 
     This represents a Vykdom Member
 
-    parms:
-        data -- Database Data
-        discord -- Discord Member
-        roblox -- RUser
+    Paramaters
+    ----------
+    -   data -- Database Data
+    -   discord -- Discord Member
+    -   roblox -- RUser
     """
 
     def __init__(self, data, discord=None, roblox=None):
@@ -146,7 +138,10 @@ class Vyktranian:
         self.discriminator = data["discriminator"]
         self.timezone = data["timezone"]
         self.rank = Rank(data["rank"])
-        self.clade = Clade(data["clade"])
+        try:
+            self.clade = Clade(data["clade"])
+        except:
+            self.clade = None
         try:
             self.subclade = Subclade(data["subclade"])
         except:
@@ -224,8 +219,7 @@ class Vyktranian:
             "accolades" : self.accolades
         }
 
-    def embed(self):
-
+    def _embed_default_page(self):
         next_rank = Rank(DB.rank_by_id(self.rank.id + 1))
         percent = self._percent_til_next(next_rank)
 
@@ -255,7 +249,7 @@ class Vyktranian:
             colour=0xe90000
         )
         e.set_author(
-            name="The Vyktranian Dominion\nImperial Convocation Outside the Struggle",
+            name="The Vyktranian Dominion\nCladistic Profile",
             icon_url="https://t5.rbxcdn.com/cd461fc64aeaa4b332087bfddb7b4b29"
         )
         e.set_thumbnail(
@@ -296,6 +290,58 @@ class Vyktranian:
         )
         e.timestamp = datetime.datetime.utcnow()
         return e
+
+    def _embed_medal_page(self, defalt):
+        default = discord.Embed.from_dict(copy.deepcopy(defalt.to_dict()))
+        default.clear_fields()
+        default.add_field(
+            name="__**WARMARK PROGRAM**__",
+            value="> `{}`\n\♦  ᚛ ▬▬▬▬▬▬▬▬▬▬〘 {} 〙▬▬▬▬▬▬▬▬▬▬ ᚜  \♦".format("Poop I", VYKDOMWhite),
+            inline=False
+        )
+        default.add_field(
+            name="__**COMBATIVE MEDALLIONS**__",
+            value="> {}".format(",".join([f"`Medal {n}`" for n in range(5)])),
+            inline=False
+        )
+        default.add_field(
+            name="__**PROSPERITY MEDALLIONS**__",
+            value="> {}".format(",".join([f"`Medal {n}`" for n in range(5)])),
+            inline=False
+        )
+        default.add_field(
+            name="__**CAMPAIGN MEDALLIONS**__",
+            value="> {}".format(",".join([f"`Medal {n}`" for n in range(5)])),
+            inline=False
+        )
+        default.add_field(
+            name="__**COMMENDATION MEDALLIONS**__",
+            value="> {}".format(",".join([f"`Medal {n}`" for n in range(5)])),
+            inline=False
+        )
+        default.add_field(
+            name="__**LEADERSHIP MEDALLIONS**__",
+            value="> {}".format(",".join([f"`Medal {n}`" for n in range(5)])),
+            inline=False
+        )
+        default.add_field(
+            name="__**ADMINISTRATIVE MEDALLIONS**__",
+            value="> {}".format(",".join([f"`Medal {n}`" for n in range(5)])),
+            inline=False
+        )
+        default.add_field(
+            name="__**RECOGNITION  MEDALLIONS**__",
+            value="> {}".format(",".join([f"`Medal {n}`" for n in range(5)])),
+            inline=False
+        )
+        return default
+
+
+    async def display(self, ctx):
+        first = self._embed_default_page()
+        second = self._embed_medal_page(first)
+        await Pages.VyktranianMenu(first, second).start(ctx)
+
 
     def set(self, *, timezone=None, rank=None, clade=None, subclade=None, accolades=None):
         if timezone:
@@ -367,6 +413,7 @@ class Vyktranian:
     async def convert(cls, ctx, argument):
 
         member = await commands.MemberConverter().convert(ctx, argument)
+
         data = DB.vyktranian_from_discord_id(member.id)
         roblox = RUser(DB.roblox_user_from_discord_id(member.id))
 
@@ -399,17 +446,23 @@ class Medal:
     """
 
     def __init__(self, data):
-        try:
-            self.id = data["id"]
-        except:
-            self.id = data["_id"]
+        self.id = data["id"]
         self.name = data["name"]
         self.description = data["description"]
         self.emoji = data["emoji"]
 
-    @classmethod
-    async def convert(cls, ctx, argument):
-        pass
+class MedalDatabase:
+    """MedalDatabase
+
+    This represent a Medal From the Database
+    """
+
+    def __init__(self, data):
+        self.id = data["_id"]
+        self.name = data["name"]
+        self.description = data["description"]
+        self.emoji = data["emoji"]
+
 
 """
 Rank
@@ -434,10 +487,6 @@ class Rank:
         self.description = data["description"]
         self.accolades = data["accolades"]
         self.family = data["family"]
-        try:
-            self._roles = data["roles"]
-        except:
-            self._roles = None
 
     def __str__(self):
         return self.name
@@ -453,17 +502,6 @@ class Rank:
         innards = ' '.join('%s=%r' % t for t in attrs)
         return f"<{self.__class__.__name__} {innards}>"
 
-    @classmethod
-    async def convert(cls, ctx, argument):
-        """
-        This will look at argument for
-
-        -   ID
-        -   Name
-        -   RoleID
-        """
-        pass
-
     def json(self):
         return {
             "id" : self.id,
@@ -471,6 +509,24 @@ class Rank:
             "description"  : self.description,
             "family" : self.family
         }
+
+class RankDatabase:
+
+    def __init__(self, data):
+        self.id = data["_id"]
+        self.name = data["name"]
+        self.description = data["description"]
+        self.accolades = data["accolades"]
+        self.family = data["family"]
+        self.roles = data["roles"]
+
+    @classmethod
+    async def convert(cls, ctx, argument):
+        try:
+            emoji = commands.EmojiConverter().convert(ctx, argument)
+        except commands.errors.CommandError:
+            pass
+
 
 """
 Clade
@@ -491,6 +547,11 @@ class Clade:
 
     @classmethod
     async def convert(cls, ctx, argument):
+        pass
+
+class CladeDatabase:
+
+    def __init__(self, data):
         pass
 
 """

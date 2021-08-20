@@ -12,8 +12,9 @@ class Database(commands.Cog):
     def __init__(self, client):
         self.client = client
     
-    @commands.command()
-    async def verify(self, ctx):
+    @commands.command(name="Verify")
+    async def _verify(self, ctx):
+        """Verifies a User's Roblox account through the bot."""
 
         user, verified, tz = await Cuter.verify_user(ctx, self.client)
 
@@ -25,19 +26,18 @@ class Database(commands.Cog):
 
     @commands.command()
     async def profile(self, ctx, user : Models.Vyktranian = None):
+        """Shows you or someone else's profile"""
         user = user if user is not None else await Models.Vyktranian.convert(ctx, str(ctx.author.id))
-        await ctx.send(content='`Viewing cladistic profile...`', embed=user.embed())
-
-    @profile.error
-    async def profile_error(self, ctx, error):
-        pass
+        await user.display(ctx)
 
     @commands.command()
     async def update(self, ctx, time):
+        """Test Command for the time being"""
         pass
 
     @commands.command()
     async def setchannel(self, ctx, channelType):
+        """Set's a channel to a specific type"""
         if channelType.lower() == "verify":
             pass
         elif channelType.lower() == "commands":

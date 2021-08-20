@@ -9,10 +9,13 @@ Functions that are too ugly will be put here for the Vykdom Discord Bot.
 """
 import discord
 import datetime
+import random
 
 from random_word import RandomWords
 from Functions import Roblox, DB
 from Objects import Errors
+
+words_choices = ['gumma', 'traditionary', 'presumedly', 'cemented', 'farsure', 'short-stay', 'hugging', 'zucchetto', '', 'body-surf', 'tarantulated', 'unmotherly', 'xenyl', 'subjacency', 'climate', 'mithramycin', 'gesturing', '', 'xerophthalmia', 'mesonychians', 'luffed', 'wheel-load', 'imperturbable', 'shortener', 'mesoscale', '', 'doles', 'cantilena', 'beckoned', 'aspirational', 'aluminothermics', 'atmospherically', 'rectorates', '', 'theatricalness', 'figary', 'affront', 'incising', 'peperomia', 'ultraportable', 'militarizes', 'omnitemporal', '', 'barbing', 'undershooting', 'directionals', 'groovily', 'pot-roast', 'crystallisation', 'tube-pouch', 'radiate', '', 'absurdist', 'Thatcherist', 'Bahamian', 'trimoxazole', 'cloison', 'fluoroscopy', 'southward', 'informants', 'cardioversion', 'defraying', '', 'smallpoxes', 'villainess', 'wrangler', 'loya', 'jirga', 'stone-carrier', 'tantalium', 'nisus', 'Commodore', 'embryotoxic', 'oversplits', 'travailed', 'camerawork', 'uncomprehensive', 'slobbishness', 'symptomless', 'anneal', 'pentatonic', 'intolerated', 'transfiguring', 'mashy', 'victories', 'papadom', 'signed_int', 'organ-gallery', 'water-lime', 'bijous', 'diametric', 'selling', 'disambiguator', 'digressionary', 'pelts', 'get-togethers', 'honourableness', 'bowne', 'gregorian', 'bradyarthria', 'herschelian', 'land-side', 'florins', 'whirr', 'destroying', 'oxine', 'unpityingly', 'knocked', 'unguicular', 'unfastenable', 'chimney-top', 'nonmissile', 'orale', 'gemmule', 'unstaged', 'martyrologist', 'leste', 'unrestricted', 'proteolyzed', 'tsipouro', 'bleynte', 'phytonomy', 'infarcts', 'talcs', 'three-farthings', 'nine-eyed', 'nondiseased', 'sportsman', 'mistiest']
 
 ## Cogs.Database.py
 
@@ -49,7 +52,7 @@ async def verify_user(ctx, client):
         await ctx.author.send("Try again.")
         raise Exception("Poop")
 
-    code = " ".join([RandomWords().get_random_word() for _ in range(5)])
+    code = " ".join(random.choice(words_choices) for _ in range(5))
     verification_message = await ctx.author.send(
         embed=discord.Embed(
             title="Verification Code",

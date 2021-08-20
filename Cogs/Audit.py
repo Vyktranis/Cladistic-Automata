@@ -9,8 +9,9 @@ class Audit(commands.Cog):
     
     def __init__(self, client):
         self.client = client
-        self.channel = None
-        self.get_channel.start()
+
+    async def _get_channel(self, channel_id):
+        return await self.client.fetch_channel(channel_id)
 
     @tasks.loop(count = 1)
     async def get_channel(self):
