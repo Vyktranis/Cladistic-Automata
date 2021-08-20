@@ -5,6 +5,7 @@
 # IMPORTS
 
 import discord
+#testing
 import logging
 import random
 from discord.ext import commands, menus
