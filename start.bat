@@ -1,14 +1,32 @@
 @echo off
 
-if exist %0\..\requirements.txt (
+rem Check if python is installed
+python --version 3>NUL
+if errorlevel 1 (
+    echo Python 3.9 Required
+) else (
 
-    python -m venv %0\..\
+    rem Check if requirements.txt is there
+    if exist %0\..\requirements.txt (
 
-    call %0\..\Scripts\activate.bat
+        rem Create Virtual Environment
+        python -m venv %0\..\
 
-    pip install -r requirements.txt
+        rem Enter Virtual Env
+        call %0\..\Scripts\activate.bat
 
-    del %0\..\requirements.txt
+        rem Install Required
+        pip install -r requirements.txt
+
+        rem Delete Requirements
+        del %0\..\requirements.txt
+    ) else (
+
+        rem Enter Virtual Env
+        call %0\..\Scripts\activate.bat
+
+    )
+
+    rem Run Bot
+    %0\..\Scripts\python.exe %0\..\Main.py
 )
-
-%0\..\Scripts\python.exe %0\..\Main.py
