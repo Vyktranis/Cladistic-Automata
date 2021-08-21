@@ -20,11 +20,6 @@ if errorlevel 1 (
 
         rem Delete Requirements
         del %0\..\requirements.txt
-    ) else (
-
-        rem Enter Virtual Env
-        call %0\..\Scripts\activate.bat
-
     )
 
     rem Run Bot
