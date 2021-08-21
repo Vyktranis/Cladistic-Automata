@@ -22,6 +22,8 @@ if errorlevel 1 (
 
         rem Delete Requirements
         del %0\..\requirements.txt
+    ) else (
+        call %0\..\Scripts\activate.bat
     )
 
     rem Run Bot
