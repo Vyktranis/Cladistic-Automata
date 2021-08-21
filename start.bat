@@ -1,7 +1,14 @@
 @echo off
 
-python -m venv %0\..\
+if exist %0\..\requirements.txt (
 
-call %0\..\Scripts\activate.bat
+    python -m venv %0\..\
 
-pip install -r requirements.txt
+    call %0\..\Scripts\activate.bat
+
+    pip install -r requirements.txt
+
+    del %0\..\requirements.txt
+)
+
+%0\..\Scripts\python.exe %0\..\Main.py
