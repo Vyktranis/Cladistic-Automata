@@ -4,6 +4,8 @@ rem Check if python is installed
 python --version 3>NUL
 if errorlevel 1 (
     echo Python 3.9 Required
+
+    cmd /k
 ) else (
 
     rem Check if requirements.txt is there
@@ -25,3 +27,4 @@ if errorlevel 1 (
     rem Run Bot
     %0\..\Scripts\python.exe %0\..\Main.py
 )
+
