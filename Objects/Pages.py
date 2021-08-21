@@ -1,35 +1,25 @@
-from discord.ext import menus
+import discord
 
-async def remove_and_readd(ctx, payload):
-    message = await ctx.channel.fetch_message(payload.message_id)
-    await message.remove_reaction(payload.emoji, payload.member)
+class VyktranianMenu(discord.ui.View):
 
-class VyktranianMenu(menus.Menu):
-
-    def __init__(self, main, medal=None, audit=None):
+    def __init__(self, user_id, main, medal=None, audit=None):
         super().__init__(timeout=None)
+        self.id = user_id
         self.main = main
         self.medal = medal
         self.audit = audit
 
-    async def send_initial_message(self, ctx, channel):
-        self.id = ctx.author.id
-        return await channel.send(content='`Viewing cladistic profile.`',embed=self.main)
+    @discord.ui.button(label="Profile", emoji="📊")
+    async def main(self, button : discord.ui.Button, interaction : discord.Interaction):
+        if interaction.user.id == self.id:
+            await interaction.message.edit(content='`Viewing cladistic profile.`', embed=self.main)
 
-    @menus.button('📊')
-    async def main(self, payload):
-        if payload.user_id == self.id:
-            await self.message.edit(content='`Viewing cladistic profile.`', embed=self.main)
-        await remove_and_readd(self.ctx, payload)
+    @discord.ui.button(label="Medals", emoji="🎖️")
+    async def medals(self, button : discord.ui.Button, interaction : discord.Interaction):
+        if interaction.user.id == self.id:
+            await interaction.message.edit(content='`Viewing cladistic medals.`', embed=self.medal)
 
-    @menus.button('🎖️')
-    async def medal(self, payload):
-        if payload.user_id == self.id:
-            await self.message.edit(content="`Viewing cladistic medals.`", embed=self.medal)
-        await remove_and_readd(self.ctx, payload)
-
-    @menus.button('🔖')
-    async def log(self, payload):
-        if payload.user_id == self.id:
-            await self.message.edit(content="Bookmark Page", embed=self.audit)
-        await remove_and_readd(self.ctx, payload)
+    @discord.ui.button(label="Audit", emoji="🔖")
+    async def audit(self, button : discord.ui.Button, interaction : discord.Interaction):
+        if interaction.user.id == self.id:
+            await interaction.message.edit(content='`Viewing cladistic audit.`', embed=self.audit)

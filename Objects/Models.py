@@ -340,7 +340,10 @@ class Vyktranian:
     async def display(self, ctx):
         first = self._embed_default_page()
         second = self._embed_medal_page(first)
-        await Pages.VyktranianMenu(first, second).start(ctx)
+        await ctx.send(
+            content='`Viewing cladistic profile.`',
+            embed=first,
+            view=Pages.VyktranianMenu(ctx.author.id, first, second))
 
 
     def set(self, *, timezone=None, rank=None, clade=None, subclade=None, accolades=None):
